@@ -1,0 +1,59 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "image";
+package image;
+
+service Image {
+
+  rpc submitImage(stream ImageContent) returns (ImageIdentifier);
+  rpc getImageInformation(ImageIdentifier) returns (ImageInformation);
+  rpc getAllImagesDetection(Level) returns (stream MonumentDetection);
+
+}
+
+message ImageContent {
+
+  bytes data = 1;
+
+}
+
+message ImageIdentifier {
+
+  string id = 1;
+
+}
+
+message ImageInformation {
+
+  repeated ImageResult results = 1;
+  ImageContent map = 2;
+
+}
+
+message ImageResult {
+
+  string name = 1;
+  Location location = 2;
+  float level = 3;
+
+}
+
+message Location {
+
+  float latitude = 1;
+  float longitude = 2;
+
+}
+
+message Level {
+
+  float level = 1;
+
+}
+
+message MonumentDetection {
+
+  string imageName = 1;
+  string monumentName = 2;
+
+}

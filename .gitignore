@@ -1,3 +1,4 @@
 .idea
 Trabalho.iml
 **/build
+**/target
