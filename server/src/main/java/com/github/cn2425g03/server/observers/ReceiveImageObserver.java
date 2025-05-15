@@ -38,7 +38,7 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
 
     @Override
     public void onError(Throwable throwable) {
-        //TODOO
+        System.out.println(throwable.getMessage());
     }
 
     @Override
