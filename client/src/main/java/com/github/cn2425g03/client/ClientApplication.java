@@ -25,6 +25,7 @@ public class ClientApplication {
         while (true) {
 
             int option = menu();
+            System.out.println(option);
             switch (option) {
                 case 1:
                     imageService.submitImage(read("Filename: ", scanner));
@@ -48,7 +49,7 @@ public class ClientApplication {
             System.out.println("99 - Exit");
             option = scanner.nextInt();
 
-        }while((option >= 1 && option <= 1) || option != 99);
+        }while(!(option >= 1 && option <= 1) && option != 99);
 
         return option;
     }
