@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 public class CloudStorageService {
 
@@ -25,8 +26,8 @@ public class CloudStorageService {
         );
     }
 
-    public Bucket getBucket(String bucketName) {
-        return storage.get(bucketName);
+    public Optional<Bucket> getBucket(String bucketName) {
+        return Optional.of(storage.get(bucketName));
     }
 
     public void uploadBlobToBucket(Bucket bucket, String blobName, byte[] bytes) throws IOException {

@@ -1,7 +1,9 @@
 package com.github.cn2425g03.server.observers;
 
 import com.github.cn2425g03.server.services.CloudStorageService;
+import com.github.cn2425g03.server.services.PubSubService;
 import com.google.cloud.storage.Bucket;
+import com.google.pubsub.v1.Topic;
 import image.ImageContent;
 import image.ImageIdentifier;
 import io.grpc.stub.StreamObserver;
@@ -9,18 +11,26 @@ import io.grpc.stub.StreamObserver;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class ReceiveImageObserver implements StreamObserver<ImageContent> {
 
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     private final StreamObserver<ImageIdentifier> observer;
     private final CloudStorageService cloudStorageService;
+    private final PubSubService pubSubService;
     private final Bucket bucket;
+    private final Topic topic;
 
-    public ReceiveImageObserver(StreamObserver<ImageIdentifier> observer, CloudStorageService cloudStorageService, Bucket bucket) {
+    public ReceiveImageObserver(
+            StreamObserver<ImageIdentifier> observer, CloudStorageService cloudStorageService,
+            PubSubService pubSubService, Bucket bucket, Topic topic
+    ) {
         this.observer = observer;
         this.cloudStorageService = cloudStorageService;
+        this.pubSubService = pubSubService;
         this.bucket = bucket;
+        this.topic = topic;
     }
 
     @Override
@@ -49,18 +59,22 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
 
         try {
 
+            String id = bucket.getName() + "/" + blobName;
+
             cloudStorageService.uploadBlobToBucket(bucket, blobName, bytes);
             observer.onNext(
                     ImageIdentifier.newBuilder()
-                            .setId(blobName)
+                            .setId(id)
                             .build()
             );
 
             observer.onCompleted();
+            pubSubService.publishMessage(topic, id);
 
-        } catch (IOException e) {
+        } catch (IOException | ExecutionException | InterruptedException e) {
             observer.onError(e);
         }
 
     }
+
 }

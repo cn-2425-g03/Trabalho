@@ -25,7 +25,6 @@ public class ClientApplication {
         while (true) {
 
             int option = menu();
-            System.out.println(option);
             switch (option) {
                 case 1:
                     imageService.submitImage(read("Filename: ", scanner));
@@ -45,8 +44,12 @@ public class ClientApplication {
 
         do {
 
+            System.out.println();
+            System.out.println("Please choose one of the following options:");
+            System.out.println();
             System.out.println("1 - Upload File");
             System.out.println("99 - Exit");
+            System.out.println();
             option = scanner.nextInt();
 
         }while(!(option >= 1 && option <= 1) && option != 99);
