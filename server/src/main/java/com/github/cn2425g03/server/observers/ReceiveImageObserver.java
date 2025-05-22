@@ -1,5 +1,6 @@
 package com.github.cn2425g03.server.observers;
 
+import com.github.cn2425g03.server.events.SubmitImageEvent;
 import com.github.cn2425g03.server.services.CloudStorageService;
 import com.github.cn2425g03.server.services.PubSubService;
 import com.google.cloud.storage.Bucket;
@@ -55,21 +56,21 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
     public void onCompleted() {
 
         byte[] bytes = buffer.toByteArray();
-        String blobName = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString();
 
         try {
 
-            String id = bucket.getName() + "/" + blobName;
-
-            cloudStorageService.uploadBlobToBucket(bucket, blobName, bytes);
+            cloudStorageService.uploadBlobToBucket(bucket, id, bytes);
             observer.onNext(
                     ImageIdentifier.newBuilder()
                             .setId(id)
                             .build()
             );
 
+            SubmitImageEvent event = new SubmitImageEvent(id, bucket.getName(), id);
+
             observer.onCompleted();
-            pubSubService.publishMessage(topic, id);
+            pubSubService.publishMessage(topic, event);
 
         } catch (IOException | ExecutionException | InterruptedException e) {
             observer.onError(e);

@@ -1,5 +1,6 @@
 package com.github.cn2425g03.server.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.Publisher;
@@ -47,13 +48,15 @@ public class PubSubService {
 
     }
 
-    public void publishMessage(Topic topic, String message) throws IOException, ExecutionException, InterruptedException {
+    public void publishMessage(Topic topic, Object message) throws IOException, ExecutionException, InterruptedException {
 
         TopicName topicName = TopicName.parse(topic.getName());
         Publisher publisher = Publisher.newBuilder(topicName).build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(message);
 
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder()
-                .setData(ByteString.copyFromUtf8(message))
+                .setData(ByteString.copyFromUtf8(json))
                 .build();
 
         publisher.publish(pubsubMessage).get();
