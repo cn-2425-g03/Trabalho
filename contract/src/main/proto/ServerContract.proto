@@ -34,14 +34,14 @@ message ImageResult {
 
   string name = 1;
   Location location = 2;
-  float level = 3;
+  double level = 3;
 
 }
 
 message Location {
 
-  float latitude = 1;
-  float longitude = 2;
+  double latitude = 1;
+  double longitude = 2;
 
 }
 

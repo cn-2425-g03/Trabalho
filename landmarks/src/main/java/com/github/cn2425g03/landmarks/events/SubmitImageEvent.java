@@ -13,6 +13,7 @@ import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.LocationInfo;
 import com.google.pubsub.v1.PubsubMessage;
 
+import java.util.List;
 import java.util.Map;
 
 public class SubmitImageEvent implements MessageReceiver {
@@ -25,6 +26,15 @@ public class SubmitImageEvent implements MessageReceiver {
         this.imageInformationRepository = imageInformationRepository;
     }
 
+    /**
+     *
+     * This method retrieves the JSON data from the pubsubMessage, deserializes it into a SubmitImageEventMessage,
+     * calls the Vision API to get the associated monuments, and saves the results in Firestore.
+     *
+     * @param pubsubMessage the message received from the queue
+     * @param consumer the consumer to be called when the message is processed successfully
+     */
+
     @Override
     public void receiveMessage(PubsubMessage pubsubMessage, AckReplyConsumer consumer) {
 
@@ -34,15 +44,20 @@ public class SubmitImageEvent implements MessageReceiver {
         try {
 
             SubmitImageEventMessage message = objectMapper.readValue(json, SubmitImageEventMessage.class);
-            EntityAnnotation entityAnnotation = visionApiService.getLandmarkInformation(message.bucketName, message.blobName);
-            LocationInfo locationInfo = entityAnnotation.getLocationsList().getFirst();
+            ImageInformation[] imagesInformation = visionApiService.getLandmarkInformation(
+                    message.bucketName, message.blobName
+            ).stream().map(entityAnnotation -> {
 
-            ImageInformation imageInformation = new ImageInformation(
-                    message.id, message.bucketName, message.blobName, locationInfo.getLatLng().getLatitude(),
-                    locationInfo.getLatLng().getLongitude(), entityAnnotation.getScore()
-            );
+                LocationInfo locationInfo = entityAnnotation.getLocationsList().getFirst();
 
-            imageInformationRepository.insert(imageInformation);
+                return new ImageInformation(
+                        message.getId(), entityAnnotation.getDescription(), message.getBucketName(), message.getBlobName(),
+                        locationInfo.getLatLng().getLatitude(), locationInfo.getLatLng().getLongitude(), entityAnnotation.getScore()
+                );
+
+            }).toArray(ImageInformation[]::new);
+
+            imageInformationRepository.insert(imagesInformation);
             consumer.ack();
 
         } catch (JsonProcessingException e) {

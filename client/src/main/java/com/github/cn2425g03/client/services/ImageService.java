@@ -1,9 +1,14 @@
 package com.github.cn2425g03.client.services;
 
 import com.github.cn2425g03.client.observers.ImageIdentifierObserver;
+import com.github.cn2425g03.client.observers.ImageInformationObserver;
 import com.google.protobuf.ByteString;
 import image.ImageContent;
 import image.ImageGrpc;
+import image.ImageIdentifier;
+import image.ImageInformation;
+import io.grpc.Status;
+import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -20,6 +25,13 @@ public class ImageService {
     public ImageService(ImageGrpc.ImageStub stub) {
         this.stub = stub;
     }
+
+    /**
+     *
+     * Submits an image to the server and sets up a callback to receive the identifier when done
+     *
+     * @param fileName the name of the file to upload
+     */
 
     public void submitImage(String fileName) {
 
@@ -56,8 +68,28 @@ public class ImageService {
 
             imageContentObserver.onCompleted();
         } catch (IOException e) {
-            imageContentObserver.onError(e);
+            imageContentObserver.onError(new StatusException(Status.CANCELLED.withDescription(e.getMessage())));
         }
+
+    }
+
+    /**
+     * Requests image information by image ID and handles the response using an observer.
+     *
+     * @param imageId the ID of the image to retrieve information for.
+     * @param filename the file name associated with the observer for handling the response.
+     */
+
+    public void getImageInformationById(String imageId, String filename) {
+
+        StreamObserver<ImageInformation> imageInformationObserver = new ImageInformationObserver(filename);
+
+        stub.getImageInformation(
+                ImageIdentifier.newBuilder()
+                        .setId(imageId)
+                        .build(),
+                imageInformationObserver
+        );
 
     }
 

@@ -1,8 +1,11 @@
 package com.github.cn2425g03.server;
 
+import com.github.cn2425g03.server.repositories.ImageInformationRepository;
 import com.github.cn2425g03.server.services.CloudStorageService;
 import com.github.cn2425g03.server.services.ImageService;
 import com.github.cn2425g03.server.services.PubSubService;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageClass;
@@ -16,6 +19,8 @@ public class GrpcApplication {
     private final static String PROJECT_ID = "cn2425-t3-g03";
     private final static String TOPIC_NAME = "cn2425-proj-g03";
     private final static String BUCKET_NAME = "cn2425-proj-g03";
+    private final static String DATABASE_ID = "cn2425-g03-trabalho";
+    private final static String API_KEY = "AIzaSyAZguhOSGbeioCyRdbu8ut-I-yBgh02rAU";
 
     public static void main(String[] args) {
 
@@ -41,8 +46,20 @@ public class GrpcApplication {
                             )
                     );
 
+            FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
+                    .setDatabaseId(DATABASE_ID)
+                    .build();
+
+            Firestore database = firestoreOptions.getService();
+            ImageInformationRepository imageInformationRepository = new ImageInformationRepository(database);
+
             io.grpc.Server server = ServerBuilder.forPort(PORT)
-                    .addService(new ImageService(pubSubService, cloudStorageService, bucket, topic))
+                    .addService(
+                            new ImageService(
+                                    imageInformationRepository, pubSubService, cloudStorageService,
+                                    bucket, topic, API_KEY
+                            )
+                    )
                     .build();
 
             server.start();

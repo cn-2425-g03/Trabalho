@@ -8,7 +8,17 @@ import java.util.List;
 
 public class VisionApiService {
 
-    public EntityAnnotation getLandmarkInformation(String bucketName, String blobName) {
+    /**
+     *
+     * Retrieves all the landmarks information given a bucket name and blob name
+     *
+     * @param bucketName bucket name
+     * @param blobName blob name
+     *
+     * @return a list of all information about the landmark
+     */
+
+    public List<EntityAnnotation> getLandmarkInformation(String bucketName, String blobName) {
 
         String path = "gs://" + bucketName + "/" + blobName;
 
@@ -43,7 +53,7 @@ public class VisionApiService {
                 if (response.hasError())
                     throw new RuntimeException(response.getError().getMessage());
 
-                 return response.getLandmarkAnnotationsList().getFirst();
+                 return response.getLandmarkAnnotationsList();
             }
 
         } catch (IOException e) {

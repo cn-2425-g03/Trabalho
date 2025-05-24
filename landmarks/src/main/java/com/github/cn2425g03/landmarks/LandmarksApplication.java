@@ -6,7 +6,7 @@ import com.github.cn2425g03.landmarks.services.PubSubService;
 import com.github.cn2425g03.landmarks.services.VisionApiService;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
-import com.google.cloud.vision.v1.*;
+import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.Subscription;
 
 import java.io.IOException;
@@ -27,6 +27,8 @@ public class LandmarksApplication {
         Subscription subscription = pubSubService.getSubscriptionById(SUBSCRIPTION_ID)
                 .orElseGet(() -> pubSubService.createSubscription(TOPIC_NAME, SUBSCRIPTION_ID));
 
+        System.out.println("Subscription " + subscription.getName() + " launched successfully");
+
         FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
                 .setDatabaseId(DATABASE_ID)
                 .build();
@@ -34,14 +36,13 @@ public class LandmarksApplication {
         Firestore database = firestoreOptions.getService();
         ImageInformationRepository imageInformationRepository = new ImageInformationRepository(database);
         VisionApiService visionApiService = new VisionApiService();
+        Subscriber subscriber = pubSubService.createSubscriber(SUBSCRIPTION_ID, new SubmitImageEvent(visionApiService, imageInformationRepository));
 
-
-        pubSubService.createSubscriber(SUBSCRIPTION_ID, new SubmitImageEvent(visionApiService, imageInformationRepository));
+        subscriber.startAsync().awaitRunning();
 
         System.out.println("LandMarksApplication Started");
 
-        while(true);
-
+        subscriber.awaitTerminated();
     }
 
 }

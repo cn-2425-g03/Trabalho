@@ -21,6 +21,16 @@ public class PubSubService {
         this.projectId = projectId;
     }
 
+    /**
+     *
+     * Retrieves the topic by its name.
+     *
+     * @param name topic name
+     *
+     * @return an Optional containing the topic, or empty if it does not exist
+     * @throws IOException if an error occurs while communicating with Google Cloud
+     */
+
     public Optional<Topic> getTopicByName(String name) throws IOException {
 
         try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
@@ -33,6 +43,16 @@ public class PubSubService {
         }
 
     }
+
+    /**
+     *
+     * Create a Subscription given a topic id and subscription id
+     *
+     * @param topicId topic id
+     * @param subscriptionId subscription id
+     *
+     * @return the Subscription
+     */
 
     public Subscription createSubscription(String topicId, String subscriptionId) {
 
@@ -52,6 +72,15 @@ public class PubSubService {
 
     }
 
+    /**
+     *
+     * Retrieves the Subscription by its id
+     *
+     * @param subscriptionId subscription id
+     *
+     * @return an Optional containing the Subscription, or empty if it does not exist
+     */
+
     public Optional<Subscription> getSubscriptionById(String subscriptionId) {
 
         SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
@@ -66,6 +95,18 @@ public class PubSubService {
 
     }
 
+    /**
+     *
+     * Creates a new Subscriber given the subscription id and a handler
+     * that implements the MessageReceiver interface
+     *
+     * @param subscriptionId subscription id
+     * @param handler the handler that processes incoming messages
+     * @param <T> the type of the handler (extends MessageReceiver)
+     *
+     * @return the Subscriber
+     */
+
     public <T extends MessageReceiver> Subscriber createSubscriber(String subscriptionId, T handler) {
 
         ProjectSubscriptionName projectSubscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
@@ -74,14 +115,9 @@ public class PubSubService {
                 .setExecutorThreadCount(1)
                 .build();
 
-        Subscriber subscriber = Subscriber.newBuilder(projectSubscriptionName, handler)
+        return Subscriber.newBuilder(projectSubscriptionName, handler)
                 .setExecutorProvider(executorProvider)
                 .build();
-
-        subscriber.startAsync().awaitRunning();
-
-        return subscriber;
-
     }
 
 }

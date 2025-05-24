@@ -17,6 +17,18 @@ public class CloudStorageService {
         this.storage = storage;
     }
 
+    /**
+     *
+     * Create a bucket given a name, storage class and location
+     *
+     * @param bucketName bucket name
+     * @param storageClass storage class
+     * @param location location
+     *
+     * @return the bucket
+     *
+     */
+
     public Bucket createBucket(String bucketName, StorageClass storageClass, String location) {
         return storage.create(
                 BucketInfo.newBuilder(bucketName)
@@ -26,9 +38,29 @@ public class CloudStorageService {
         );
     }
 
+    /**
+     *
+     * Retrieves the bucket by its name.
+     *
+     * @param bucketName bucket name
+     *
+     * @return an Optional containing the bucket, or empty if it does not exist
+     *
+     */
+
     public Optional<Bucket> getBucket(String bucketName) {
         return Optional.of(storage.get(bucketName));
     }
+
+    /**
+     *
+     * Create a blob in the bucket given the bucket, blob name and the bytes to upload
+     *
+     * @param bucket bucket
+     * @param blobName blob name
+     * @param bytes bytes array
+     *
+     */
 
     public void uploadBlobToBucket(Bucket bucket, String blobName, byte[] bytes) throws IOException {
 

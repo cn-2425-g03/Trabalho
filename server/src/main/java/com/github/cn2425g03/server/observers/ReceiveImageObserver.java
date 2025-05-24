@@ -7,6 +7,8 @@ import com.google.cloud.storage.Bucket;
 import com.google.pubsub.v1.Topic;
 import image.ImageContent;
 import image.ImageIdentifier;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +36,13 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
         this.topic = topic;
     }
 
+    /**
+     *
+     * Receives image data and appends it to a buffer.
+     *
+     * @param imageContent the image data in bytes
+     */
+
     @Override
     public void onNext(ImageContent imageContent) {
 
@@ -42,7 +51,7 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
         try {
             buffer.write(bytes);
         } catch (IOException e) {
-            observer.onError(e);
+            observer.onError(new StatusRuntimeException(Status.CANCELLED.withDescription(e.getMessage())));
         }
 
     }
@@ -51,6 +60,13 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
     public void onError(Throwable throwable) {
         System.out.println(throwable.getMessage());
     }
+
+    /**
+     *
+     * When there is no more data to receive, this method uploads the image
+     * to Cloud Storage, publishes an event to a topic, and sends an identifier back to the client
+     *
+     */
 
     @Override
     public void onCompleted() {
@@ -73,7 +89,7 @@ public class ReceiveImageObserver implements StreamObserver<ImageContent> {
             pubSubService.publishMessage(topic, event);
 
         } catch (IOException | ExecutionException | InterruptedException e) {
-            observer.onError(e);
+            observer.onError(new StatusRuntimeException(Status.CANCELLED.withDescription(e.getMessage())));
         }
 
     }

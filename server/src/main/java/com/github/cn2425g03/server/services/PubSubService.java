@@ -1,7 +1,6 @@
 package com.github.cn2425g03.server.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.gax.rpc.AlreadyExistsException;
 import com.google.api.gax.rpc.NotFoundException;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
@@ -22,6 +21,15 @@ public class PubSubService {
         this.projectId = projectId;
     }
 
+    /**
+     *
+     * Create a topic given a name
+     *
+     * @param name topic name
+     *
+     * @return the topic
+     */
+
     public Topic createTopic(String name) {
 
         try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
@@ -35,6 +43,16 @@ public class PubSubService {
 
     }
 
+    /**
+     *
+     * Retrieves the topic by its name.
+     *
+     * @param name topic name
+     *
+     * @return an Optional containing the topic, or empty if it does not exist
+     *
+     */
+
     public Optional<Topic> getTopicByName(String name) throws IOException {
 
         try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
@@ -47,6 +65,14 @@ public class PubSubService {
         }
 
     }
+
+    /**
+     * Publishes a message to the specified topic.
+     *
+     * @param topic the topic to which the message will be sent.
+     * @param message the message to publish.
+     *
+     */
 
     public void publishMessage(Topic topic, Object message) throws IOException, ExecutionException, InterruptedException {
 
