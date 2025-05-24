@@ -20,7 +20,7 @@ public class GrpcApplication {
     private final static String TOPIC_NAME = "cn2425-proj-g03";
     private final static String BUCKET_NAME = "cn2425-proj-g03";
     private final static String DATABASE_ID = "cn2425-g03-trabalho";
-    private final static String API_KEY = "AIzaSyAZguhOSGbeioCyRdbu8ut-I-yBgh02rAU";
+    private final static String API_KEY = System.getenv("API_KEY");
 
     public static void main(String[] args) {
 
