@@ -39,4 +39,16 @@ public class ImageInformationRepository {
                 .toList();
     }
 
+    public List<ImageInformation> getAllByScoreGreaterThan(double score) throws ExecutionException, InterruptedException {
+
+        CollectionReference collection = database.collection("images_information");
+
+        ApiFuture<QuerySnapshot> future = collection.whereGreaterThan("score", score).get();
+        QuerySnapshot querySnapshot = future.get();
+
+        return querySnapshot.getDocuments().stream()
+                .map(document -> document.toObject(ImageInformation.class))
+                .toList();
+    }
+
 }

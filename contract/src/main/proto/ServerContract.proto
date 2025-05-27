@@ -47,7 +47,7 @@ message Location {
 
 message Score {
 
-  float value = 1;
+  double value = 1;
 
 }
 

@@ -7,6 +7,7 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.Topic;
 import image.*;
 import io.grpc.Status;
+import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
@@ -119,18 +120,36 @@ public class ImageService extends ImageGrpc.ImageImplBase {
                 responseObserver.onCompleted();
 
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                responseObserver.onError(new StatusException(Status.INTERNAL.withDescription(e.getMessage())));
             }
 
         } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+            responseObserver.onError(new StatusException(Status.INTERNAL.withDescription(e.getMessage())));
         }
 
     }
 
     @Override
     public void getAllImagesDetection(Score request, StreamObserver<MonumentDetection> responseObserver) {
-        super.getAllImagesDetection(request, responseObserver);
+
+        try {
+
+            for (var information : imageInformationRepository.getAllByScoreGreaterThan(request.getValue())) {
+
+                MonumentDetection monumentDetection = MonumentDetection.newBuilder()
+                        .setImageName(information.blobName())
+                        .setMonumentName(information.description())
+                        .build();
+
+                responseObserver.onNext(monumentDetection);
+            }
+
+            responseObserver.onCompleted();
+
+        } catch (ExecutionException | InterruptedException e) {
+            responseObserver.onError(new StatusException(Status.INTERNAL.withDescription(e.getMessage())));
+        }
+
     }
 
 }

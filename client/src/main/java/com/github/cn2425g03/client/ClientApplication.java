@@ -34,6 +34,11 @@ public class ClientApplication {
                             read("Image ID: ", scanner), read("Filename: ", scanner)
                     );
                     break;
+                case 3:
+                    imageService.getAllImagesDetection(
+                            Double.parseDouble(read("Score: ", scanner))
+                    );
+                    break;
                 case 99:
                     System.exit(0);
             }
@@ -54,11 +59,12 @@ public class ClientApplication {
             System.out.println();
             System.out.println("1 - Upload File");
             System.out.println("2 - Retrieve Image Information");
+            System.out.println("3 - Monument Detection");
             System.out.println("99 - Exit");
             System.out.println();
             option = scanner.nextInt();
 
-        }while(!(option >= 1 && option <= 2) && option != 99);
+        }while(!(option >= 1 && option <= 3) && option != 99);
 
         return option;
     }

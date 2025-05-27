@@ -2,11 +2,9 @@ package com.github.cn2425g03.client.services;
 
 import com.github.cn2425g03.client.observers.ImageIdentifierObserver;
 import com.github.cn2425g03.client.observers.ImageInformationObserver;
+import com.github.cn2425g03.client.observers.MonumentDetectionObserver;
 import com.google.protobuf.ByteString;
-import image.ImageContent;
-import image.ImageGrpc;
-import image.ImageIdentifier;
-import image.ImageInformation;
+import image.*;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
@@ -89,6 +87,19 @@ public class ImageService {
                         .setId(imageId)
                         .build(),
                 imageInformationObserver
+        );
+
+    }
+
+    public void getAllImagesDetection(double score) {
+
+        StreamObserver<MonumentDetection> monumentDetectionObserver = new MonumentDetectionObserver();
+
+        stub.getAllImagesDetection(
+                Score.newBuilder()
+                        .setValue(score)
+                        .build(),
+                monumentDetectionObserver
         );
 
     }
