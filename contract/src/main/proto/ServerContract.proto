@@ -7,7 +7,7 @@ service Image {
 
   rpc submitImage(stream ImageContent) returns (ImageIdentifier);
   rpc getImageInformation(ImageIdentifier) returns (ImageInformation);
-  rpc getAllImagesDetection(Level) returns (stream MonumentDetection);
+  rpc getAllImagesDetection(Score) returns (stream MonumentDetection);
 
 }
 
@@ -34,7 +34,7 @@ message ImageResult {
 
   string name = 1;
   Location location = 2;
-  double level = 3;
+  double score = 3;
 
 }
 
@@ -45,9 +45,9 @@ message Location {
 
 }
 
-message Level {
+message Score {
 
-  float level = 1;
+  float value = 1;
 
 }
 

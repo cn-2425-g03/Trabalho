@@ -31,7 +31,7 @@ public class ImageInformationObserver implements StreamObserver<ImageInformation
             System.out.println("Monument: " + imageResult.getName());
             System.out.println("Latitude: " + imageResult.getLocation().getLatitude());
             System.out.println("Longitude: " + imageResult.getLocation().getLongitude());
-            System.out.println("Score: " + imageResult.getLevel());
+            System.out.println("Score: " + imageResult.getScore());
             System.out.println();
 
         }

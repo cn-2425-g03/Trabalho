@@ -11,7 +11,6 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -102,7 +101,7 @@ public class ImageService extends ImageGrpc.ImageImplBase {
                                                 .setLongitude(information.longitude())
                                                 .build()
                                 )
-                                .setLevel(information.score())
+                                .setScore(information.score())
                                 .build())
                         .toList();
 
@@ -130,7 +129,7 @@ public class ImageService extends ImageGrpc.ImageImplBase {
     }
 
     @Override
-    public void getAllImagesDetection(Level request, StreamObserver<MonumentDetection> responseObserver) {
+    public void getAllImagesDetection(Score request, StreamObserver<MonumentDetection> responseObserver) {
         super.getAllImagesDetection(request, responseObserver);
     }
 
