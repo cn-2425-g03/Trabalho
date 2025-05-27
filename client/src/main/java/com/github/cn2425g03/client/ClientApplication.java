@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public class ClientApplication {
 
     public static void main(String[] args) {
 
-        String serverIp = getServerIp();
+        String serverIp = Arrays.asList(args).contains("--preferred-ip") ? getServerIp() : getRandomServerIp();
 
         System.out.println("Connecting to " + serverIp + "...");
 
@@ -65,7 +66,38 @@ public class ClientApplication {
 
     }
 
+    private static String getRandomServerIp() {
+
+        String[] ips = getAllServersIp();
+
+        return ips[new Random().nextInt(ips.length)];
+    }
+
     private static String getServerIp() {
+
+        String[] ips = getAllServersIp();
+
+        System.out.println();
+        System.out.println("Please choose one of the following servers:");
+        System.out.println();
+
+        for (String ip : ips) {
+            System.out.println(ip);
+        }
+
+        System.out.println();
+
+        String ip = read("Server IP: ", new Scanner(System.in));
+
+        if (!Arrays.asList(ips).contains(ip)) {
+            System.out.println("Invalid server IP!");
+            System.exit(0);
+        }
+
+        return ip;
+    }
+
+    private static String[] getAllServersIp() {
 
         try (HttpClient httpClient = HttpClient.newHttpClient()) {
 
@@ -75,9 +107,9 @@ public class ClientApplication {
 
             String json = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
             Gson gson = new Gson();
-            String[] ips = gson.fromJson(json, String[].class);
 
-            return ips[new Random().nextInt(ips.length)];
+            return gson.fromJson(json, String[].class);
+
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
