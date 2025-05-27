@@ -107,8 +107,14 @@ public class ClientApplication {
 
             String json = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
             Gson gson = new Gson();
+            String[] ips = gson.fromJson(json, String[].class);
 
-            return gson.fromJson(json, String[].class);
+            if (ips.length == 0) {
+                System.out.println("There is no server to connect");
+                System.exit(0);
+            }
+
+            return ips;
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

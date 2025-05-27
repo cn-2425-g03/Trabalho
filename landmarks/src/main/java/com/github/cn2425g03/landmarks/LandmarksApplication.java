@@ -12,9 +12,7 @@ import com.google.pubsub.v1.Subscription;
 public class LandmarksApplication {
 
     private final static String PROJECT_ID = "cn2425-t3-g03";
-
     private final static String SUBSCRIPTION_ID = "landmarks_subscription";
-
     private final static String TOPIC_NAME = "cn2425-proj-g03";
     private final static String DATABASE_ID = "cn2425-g03-trabalho";
 

@@ -49,7 +49,7 @@ public class CloudStorageService {
      */
 
     public Optional<Bucket> getBucket(String bucketName) {
-        return Optional.of(storage.get(bucketName));
+        return Optional.ofNullable(storage.get(bucketName));
     }
 
     /**
