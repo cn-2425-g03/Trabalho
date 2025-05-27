@@ -9,8 +9,6 @@ import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.Subscription;
 
-import java.io.IOException;
-
 public class LandmarksApplication {
 
     private final static String PROJECT_ID = "cn2425-t3-g03";
@@ -20,12 +18,15 @@ public class LandmarksApplication {
     private final static String TOPIC_NAME = "cn2425-proj-g03";
     private final static String DATABASE_ID = "cn2425-g03-trabalho";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         PubSubService pubSubService = new PubSubService(PROJECT_ID);
 
         Subscription subscription = pubSubService.getSubscriptionById(SUBSCRIPTION_ID)
-                .orElseGet(() -> pubSubService.createSubscription(TOPIC_NAME, SUBSCRIPTION_ID));
+                .orElseGet(() -> {
+                    System.out.println("Creating new subscription: " + SUBSCRIPTION_ID);
+                    return pubSubService.createSubscription(TOPIC_NAME, SUBSCRIPTION_ID);
+                });
 
         System.out.println("Subscription " + subscription.getName() + " launched successfully");
 
