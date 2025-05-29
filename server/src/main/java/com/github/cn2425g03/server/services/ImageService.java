@@ -129,6 +129,15 @@ public class ImageService extends ImageGrpc.ImageImplBase {
 
     }
 
+    /**
+     *
+     * Retrieve all the images with a score higher than the provided threshold and send them to the client.
+     *
+     * @param request the score threshold for the detection
+     * @param responseObserver the observer to send the response to the client
+     *
+     */
+
     @Override
     public void getAllImagesDetection(Score request, StreamObserver<MonumentDetection> responseObserver) {
 

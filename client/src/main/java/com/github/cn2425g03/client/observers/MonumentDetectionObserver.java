@@ -5,6 +5,13 @@ import io.grpc.stub.StreamObserver;
 
 public class MonumentDetectionObserver implements StreamObserver<MonumentDetection> {
 
+    /**
+     *
+     * The handler for monument detection responses.
+     *
+     * @param monumentDetection the monument detection response
+     *
+     */
 
     @Override
     public void onNext(MonumentDetection monumentDetection) {

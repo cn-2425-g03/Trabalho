@@ -29,6 +29,7 @@ public class ImageService {
      * Submits an image to the server and sets up a callback to receive the identifier when done
      *
      * @param fileName the name of the file to upload
+     *
      */
 
     public void submitImage(String fileName) {
@@ -76,6 +77,7 @@ public class ImageService {
      *
      * @param imageId the ID of the image to retrieve information for.
      * @param filename the file name associated with the observer for handling the response.
+     *
      */
 
     public void getImageInformationById(String imageId, String filename) {
@@ -90,6 +92,14 @@ public class ImageService {
         );
 
     }
+
+    /**
+     *
+     * Retrieve all the images with a score higher than the provided threshold.
+     *
+     * @param score the score threshold for the detection
+     *
+     */
 
     public void getAllImagesDetection(double score) {
 
